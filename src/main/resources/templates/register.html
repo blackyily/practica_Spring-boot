@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: layout(~{::title}, ~{::#content})}">
+<head>
+    <title>Registro - AgendaPro</title>
+</head>
+<body>
+<div id="content">
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <span class="auth-icon">✨</span>
+                <h2>Crear Cuenta</h2>
+                <p>Regístrate para comenzar a gestionar tu agenda modular</p>
+            </div>
+
+            <div id="alertBox" class="alert alert-danger" style="display:none;"></div>
+
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="regUsername">Nombre de Usuario</label>
+                    <input type="text" id="regUsername" class="form-input" required minlength="3" maxlength="50" placeholder="Ej. usuario123">
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Correo Electrónico</label>
+                    <input type="email" id="regEmail" class="form-input" required placeholder="tu@correo.com">
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Contraseña</label>
+                    <input type="password" id="regPassword" class="form-input" required minlength="6" placeholder="Mínimo 6 caracteres">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" id="btnRegister">Registrarse</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>¿Ya tienes una cuenta? <a th:href="@{/login}">Inicia sesión</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base :: layout(~{::title}, ~{::#content})}">
+<head>
+    <title>Mi Agenda - Contactos</title>
+</head>
+<body>
+<div id="content">
+    <div class="container">
+        <!-- Banner superior -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="page-title">Gestión de Contactos</h1>
+                <p class="page-subtitle">
+                    Administra tus relaciones personales y profesionales con aislamiento estricto por usuario y persistencia JPA.
+                </p>
+            </div>
+            <div class="hero-actions">
+                <button class="btn btn-primary" onclick="openCreateModal()">+ Nuevo Contacto</button>
+            </div>
+        </div>
+
+        <!-- Token Status Card -->
+        <div class="card token-status-card" id="tokenCard">
+            <div class="card-header-flex">
+                <div class="flex-align">
+                    <span class="status-dot active"></span>
+                    <strong>Estado de Sesión JWT:</strong>
+                    <span id="sessionStatusText" class="badge">Autenticado vía Bearer Token</span>
+                </div>
+                <div class="meta-info">
+                    <span id="currentUserDisplay" class="text-muted">Usuario: demo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid de Contactos -->
+        <div class="card main-card">
+            <div class="card-header">
+                <h2>Directorio Telefónico</h2>
+                <span class="badge" id="contactCountBadge" th:text="${contacts != null ? contacts.size() + ' contactos' : '0 contactos'}">0 contactos</span>
+            </div>
+
+            <!-- Tabla de contactos -->
+            <div class="table-responsive">
+                <table class="data-table" id="contactsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre Completo</th>
+                            <th>Teléfono</th>
+                            <th>Correo Electrónico</th>
+                            <th>Dirección</th>
+                            <th>Fecha Creación</th>
+                            <th class="text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contactsTbody">
+                        <!-- Renderizado SSR con Thymeleaf -->
+                        <tr th:each="contact : ${contacts}" th:id="'contact-row-' + ${contact.id}">
+                            <td class="id-col" th:text="${contact.id}">1</td>
+                            <td class="font-semibold" th:text="${contact.name}">Juan Pérez</td>
+                            <td><span class="phone-chip" th:text="${contact.phone}">+52 555-123-4567</span></td>
+                            <td th:text="${contact.email != null ? contact.email : '-'}">juan@example.com</td>
+                            <td th:text="${contact.address != null ? contact.address : '-'}">Ciudad de México</td>
+                            <td class="text-muted" th:text="${#temporals.format(contact.createdAt, 'dd/MM/yyyy HH:mm')}">13/10/2026</td>
+                            <td class="text-right actions-col">
+                                <button class="btn-icon btn-edit" th:data-id="${contact.id}" th:data-name="${contact.name}" th:data-phone="${contact.phone}" th:data-email="${contact.email}" th:data-address="${contact.address}" onclick="prepareEditFromBtn(this)">✏️</button>
+                                <button class="btn-icon btn-delete" th:onclick="'deleteContact(' + ${contact.id} + ')'">🗑️</button>
+                            </td>
+                        </tr>
+                        <!-- Fallback si la lista está vacía -->
+                        <tr id="emptyRow" th:if="${contacts == null or contacts.empty}">
+                            <td colspan="7" class="empty-state">
+                                <div class="empty-state-box">
+                                    <span class="empty-icon">📭</span>
+                                    <p>No tienes contactos registrados en tu agenda personal.</p>
+                                    <button class="btn btn-outline" onclick="openCreateModal()">Crear mi primer contacto</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Crear / Editar Contacto -->
+    <div id="contactModal" class="modal-backdrop" style="display:none;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nuevo Contacto</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="contactForm" onsubmit="saveContact(event)">
+                <input type="hidden" id="contactId">
+                <div class="form-group">
+                    <label for="contactName">Nombre Completo *</label>
+                    <input type="text" id="contactName" class="form-input" required minlength="2" maxlength="100" placeholder="Ej. Carlos Mendoza">
+                </div>
+                <div class="form-group">
+                    <label for="contactPhone">Teléfono *</label>
+                    <input type="tel" id="contactPhone" class="form-input" required pattern="^[+0-9\s\-()]{7,20}$" placeholder="Ej. +52 55 1234 5678">
+                </div>
+                <div class="form-group">
+                    <label for="contactEmail">Correo Electrónico</label>
+                    <input type="email" id="contactEmail" class="form-input" placeholder="carlos@correo.com">
+                </div>
+                <div class="form-group">
+                    <label for="contactAddress">Dirección</label>
+                    <input type="text" id="contactAddress" class="form-input" placeholder="Av. Insurgentes Sur #100">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnSaveContact">Guardar Contacto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
